@@ -6,7 +6,7 @@ Monitoring failed Azure data factory pipelines. There is a query that is run eve
 ## Requierments
 
 + Azure account 
-+ ADf
++ ADF
 + Possibility to create resources 
 + Resource group
 + Logic app
