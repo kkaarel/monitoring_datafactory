@@ -14,7 +14,7 @@ Monitoring failed Azure data factory pipelines. There is a query that runs every
 + Diagnostics enabled on Data factory
 
 + Inside the azuredeloy script there is a possibility to add a error documentation link
-
++ There are also tags for the azure resource to be filled
 
 
 ## How to deploy 
