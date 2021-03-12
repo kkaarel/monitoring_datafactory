@@ -1,0 +1,46 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "logicappname": {
+            "value": "monitoring_adf"
+        },
+        "connections_externalid": {
+            "value": "/subscriptions/<subscrioption>/resourceGroups/<resourcegroup>/providers/Microsoft.Web/connections/azuremonitorlogs"
+        },            
+        "tagEnv": {
+            "value": "d" 
+        },    
+        "ENV":{
+            "value": "DEV"
+         },
+         "webhook":{
+             "value": "teamswebhook"
+         },
+         "frequency": {
+            "value": "hour"
+          },
+          "subscription": {
+              "value": "subscrioption"
+          },
+          "resourcegroup": {
+              "value": "<resourceGroup>"
+        },
+            
+          "resourcename": {
+              "value": "<log analytics workspace name>"
+         },
+          "resourcetype": {
+              "value": "Log Analytics Workspace"
+        },
+        
+          "timerange": {
+              "value":
+              "Last hour"
+            },
+         "resourceprovider":{
+             "value": "/subscriptions/<subscrioption>/providers/Microsoft.Web/locations/westeurope/managedApis/azuremonitorlogs"
+         }   
+          
+    }
+}

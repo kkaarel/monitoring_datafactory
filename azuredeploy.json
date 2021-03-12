@@ -1,0 +1,199 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "logicappname": {
+            "type": "String"
+        },
+        "connections_externalid": {
+            "type": "String"
+        },
+        "tagEnv": {
+        "type": "string" 
+    },
+        "ENV":{
+          "type": "string"
+    },
+    "webhook": {
+      "type": "string"
+    },
+    "frequency": {
+      "type": "string"
+    },
+    "subscription": {
+      "type": "string"
+    },
+    "resourcegroup": {
+      "type": "string"
+    },
+    "resourcename": {
+      "type": "string"
+    },
+    "resourcetype": {
+      "type": "string"
+    },
+    "timerange": {
+      "type": "string"
+    },
+    "resourceprovider": {
+      "type": "string"
+    }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "[concat(parameters('logicappname'),parameters('tagEnv'))]",
+            "location": "westeurope",
+            "tags": {
+                "Application Purpose": "",
+                "Business Owner": "",
+                "Cost Centre": "",
+                "Creator": "",
+                "Environment": "[parameters('tagEnv')]",
+                "Owner": "",
+                "Partner": "",
+                "Project Name": ""
+            },
+            "properties": {
+                "state": "Enabled",
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        },
+                        "subscription": {
+                            "defaultValue": "[parameters('subscription')]",
+                            "type": "String"
+                        }
+                    },
+                    "triggers": {
+                        "Recurrence": {
+                            "recurrence": {
+                                "frequency": "[parameters('frequency')]",
+                                "interval": 1
+                            },
+                            "type": "Recurrence"
+                        }
+                    },
+                    "actions": {
+                        "For_each": {
+                            "foreach": "@body('Run_query_and_list_results')?['value']",
+                            "actions": {
+                                "Condition": {
+                                    "actions": {
+                                        "HTTP": {
+                                            "runAfter": {},
+                                            "type": "Http",
+                                            "inputs": {
+                                            "body": {
+                                            "markdown": false,
+                                            "text": "**&#9940**<br><br> **Environment:**  @{variables('ENV_NAME')}  <br><br> **Data Factory Pipeline status:** @{items('For_each')?['Status']} <br><br> **Pipeline name:**  @{items('For_each')?['Pipeline Name']} <br><br> **Link to ADF**: <a href=https://adf.azure.com/en-us/monitoring/pipelineruns/@{items('For_each')?['Run id']}?factory=%2Fsubscriptions%2F@{parameters('subscription')}%2FresourceGroups%2F@{items('For_each')?['Resource group']}%2Fproviders%2FMicrosoft.DataFactory%2Ffactories%2F@{items('For_each')?['Data Factory']}/>Go to Error</a> <br><br> **Event time**: @{items('For_each')?['Error time']} <br> <br> **Message:** @{items('For_each')?['Error message']} <br><br> **Error Instructions**: <a href=https://www.solita.fi/>Go to Documentation</a> ",
+                                            "type": "TextBlock"
+                                            },
+                                                "headers": {
+                                                    "Content-Type": "application/json"
+                                                },
+                                                "method": "POST",
+                                                "uri": "@variables('Alert URI')"
+                                            }
+                                        }
+                                    },
+                                    "runAfter": {},
+                                    "expression": {
+                                        "and": [
+                                            {
+                                                "equals": [
+                                                    "@items('For_each')?['Status']",
+                                                    "Failed"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    "type": "If"
+                                }
+                            },
+                            "runAfter": {
+                                "Initialize_variable_2": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Foreach"
+                        },
+                        "Initialize_variable": {
+                            "runAfter": {
+                                "Run_query_and_list_results": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "ENV_NAME",
+                                        "type": "string",
+                                        "value": "[parameters('ENV')]"
+                                    }
+                                ]
+                            }
+                        },
+                        "Initialize_variable_2": {
+                            "runAfter": {
+                                "Initialize_variable": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "Alert URI",
+                                        "type": "string",
+                                        "value": "[parameters('webhook')]"
+                                    }
+                                ]
+                            }
+                        },
+                        "Run_query_and_list_results": {
+                            "runAfter": {},
+                            "type": "ApiConnection",
+                            "inputs": {
+                             "body": "AzureDiagnostics \n| where ResourceProvider == \"MICROSOFT.DATAFACTORY\" \n    and status_s == \"Failed\"\n    and Category == \"PipelineRuns\"\n    and SubscriptionId ==\"@{parameters('subscription')}\"\n| project TimeGenerated, Message, pipelineName_s, Category,  Resource, status_s, pipelineRunId_g, ResourceGroup, runId_g\n| project-rename ['Error time']=TimeGenerated, ['Error message']=Message, ['Pipeline Name']=pipelineName_s, ['Status'] = status_s, ['Data Factory']=Resource, ['Run id']=runId_g, ['Resource group']=ResourceGroup\n| order by ['Error time'] desc\n",
+                             "host": {
+                            "connection": {
+                            "name": "@parameters('$connections')['azuremonitorlogs_1']['connectionId']"
+                        }
+                    },
+                                "method": "post",
+                                "path": "/queryData",
+                                "queries": {
+                                    "resourcegroups": "[parameters('resourcegroup')]",
+                                    "resourcename": "[parameters('resourcename')]",
+                                    "resourcetype": "[parameters('resourcetype')]",
+                                    "subscriptions": "[parameters('subscription')]",
+                                    "timerange": "[parameters('timerange')]"
+                                }
+                            }
+                        }
+                    },
+                    "outputs": {}
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "azuremonitorlogs_1": {
+                                "connectionId": "[parameters('connections_externalid')]",
+                                "connectionName": "azuremonitorlogs",
+                                "id": "[parameters('resourceprovider')]"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}
