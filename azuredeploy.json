@@ -9,35 +9,35 @@
             "type": "String"
         },
         "tagEnv": {
-        "type": "string" 
-    },
-        "ENV":{
-          "type": "string"
-    },
-    "webhook": {
-      "type": "string"
-    },
-    "frequency": {
-      "type": "string"
-    },
-    "subscription": {
-      "type": "string"
-    },
-    "resourcegroup": {
-      "type": "string"
-    },
-    "resourcename": {
-      "type": "string"
-    },
-    "resourcetype": {
-      "type": "string"
-    },
-    "timerange": {
-      "type": "string"
-    },
-    "resourceprovider": {
-      "type": "string"
-    }
+            "type": "string"
+        },
+        "ENV": {
+            "type": "string"
+        },
+        "webhook": {
+            "type": "string"
+        },
+        "frequency": {
+            "type": "string"
+        },
+        "subscription": {
+            "type": "string"
+        },
+        "resourcegroup": {
+            "type": "string"
+        },
+        "resourcename": {
+            "type": "string"
+        },
+        "resourcetype": {
+            "type": "string"
+        },
+        "timerange": {
+            "type": "string"
+        },
+        "resourceprovider": {
+            "type": "string"
+        }
     },
     "variables": {},
     "resources": [
@@ -90,11 +90,11 @@
                                             "runAfter": {},
                                             "type": "Http",
                                             "inputs": {
-                                            "body": {
-                                            "markdown": false,
-                                            "text": "**&#9940**<br><br> **Environment:**  @{variables('ENV_NAME')}  <br><br> **Data Factory Pipeline status:** @{items('For_each')?['Status']} <br><br> **Pipeline name:**  @{items('For_each')?['Pipeline Name']} <br><br> **Link to ADF**: <a href=https://adf.azure.com/en-us/monitoring/pipelineruns/@{items('For_each')?['Run id']}?factory=%2Fsubscriptions%2F@{parameters('subscription')}%2FresourceGroups%2F@{items('For_each')?['Resource group']}%2Fproviders%2FMicrosoft.DataFactory%2Ffactories%2F@{items('For_each')?['Data Factory']}/>Go to Error</a> <br><br> **Event time**: @{items('For_each')?['Error time']} <br> <br> **Message:** @{items('For_each')?['Error message']} <br><br> **Error Instructions**: <a href=https://www.solita.fi/>Go to Documentation</a> ",
-                                            "type": "TextBlock"
-                                            },
+                                                "body": {
+                                                    "markdown": false,
+                                                    "text": "**&#9940**<br><br> **Environment:**  @{variables('ENV_NAME')}  <br><br> **Data Factory Pipeline status:** @{items('For_each')?['Status']} <br><br> **Pipeline name:**  @{items('For_each')?['Pipeline Name']} <br><br> **Link to ADF**: <a href=https://adf.azure.com/en-us/monitoring/pipelineruns/@{items('For_each')?['Run id']}?factory=%2Fsubscriptions%2F@{parameters('subscription')}%2FresourceGroups%2F@{items('For_each')?['Resource group']}%2Fproviders%2FMicrosoft.DataFactory%2Ffactories%2F@{items('For_each')?['Data Factory']}/>Go to Error</a> <br><br> **Event time**: @{items('For_each')?['Error time']} <br> <br> **Message:** @{items('For_each')?['Error message']} <br><br> **Error Instructions**: <a href=https://www.solita.fi/>Go to Documentation</a> ",
+                                                    "type": "TextBlock"
+                                                },
                                                 "headers": {
                                                     "Content-Type": "application/json"
                                                 },
@@ -162,12 +162,12 @@
                             "runAfter": {},
                             "type": "ApiConnection",
                             "inputs": {
-                             "body": "AzureDiagnostics \n| where ResourceProvider == \"MICROSOFT.DATAFACTORY\" \n    and status_s == \"Failed\"\n    and Category == \"PipelineRuns\"\n    and SubscriptionId ==\"@{parameters('subscription')}\"\n| project TimeGenerated, Message, pipelineName_s, Category,  Resource, status_s, pipelineRunId_g, ResourceGroup, runId_g\n| project-rename ['Error time']=TimeGenerated, ['Error message']=Message, ['Pipeline Name']=pipelineName_s, ['Status'] = status_s, ['Data Factory']=Resource, ['Run id']=runId_g, ['Resource group']=ResourceGroup\n| order by ['Error time'] desc\n",
-                             "host": {
-                            "connection": {
-                            "name": "@parameters('$connections')['azuremonitorlogs_1']['connectionId']"
-                        }
-                    },
+                                "body": "AzureDiagnostics \n| where ResourceProvider == \"MICROSOFT.DATAFACTORY\" \n    and status_s == \"Failed\"\n    and Category == \"PipelineRuns\"\n    and SubscriptionId ==\"@{parameters('subscription')}\"\n| project TimeGenerated, Message, pipelineName_s, Category,  Resource, status_s, pipelineRunId_g, ResourceGroup, runId_g\n| project-rename ['Error time']=TimeGenerated, ['Error message']=Message, ['Pipeline Name']=pipelineName_s, ['Status'] = status_s, ['Data Factory']=Resource, ['Run id']=runId_g, ['Resource group']=ResourceGroup\n| order by ['Error time'] desc\n",
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['azuremonitorlogs_1']['connectionId']"
+                                    }
+                                },
                                 "method": "post",
                                 "path": "/queryData",
                                 "queries": {
