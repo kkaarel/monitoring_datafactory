@@ -1,6 +1,6 @@
 # Reading messages from Azure log analytics workspaxe and sending message to MS Teams
 
-Monitoring failed Azure data factory pipelines. There is a query that is run every hour once and see if there are any failed pipline, this can be configured by chaning the reccuring information.
+Monitoring failed Azure data factory pipelines. There is a query that runs every hour once and see if there are any failed pipline, this can be configured by changing the reccuring information.
 
 
 ## Requierments
