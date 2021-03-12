@@ -13,8 +13,14 @@ Monitoring failed Azure data factory pipelines. There is a query that is run eve
 + Log analytics workspace
 + Diagnostics enabled on Data factory
 
++ Inside the azuredeloy script there is a possibility to add a error documentation link
+
+
 
 ## How to deploy 
+
+
+
 
 Azure Cli installed for this or you can deploy the ARM template from Azure portal as well.
 
